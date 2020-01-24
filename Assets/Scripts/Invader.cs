@@ -6,20 +6,20 @@ public class Invader : MonoBehaviour
 {
     Vector3 velocity = new Vector3(3, 0, 0);
     float speedIncrement = 2;
+    bool moveLeft = false;
+
+    bool moveDown = false;
+    int numMoveDown = 0; // number of time havingmoved down
     float moveDownIncrement = 1;
     float currentMoveDownIncrement = 0;
-    float horBound = 15; // the invader can only move horizontally within this bound 
-    bool moveLeft = false;
-    bool moveDown = false;
-
+  
     // Start is called before the first frame update
     void Start()
     {}
 
     // Update is called once per frame
     void Update()
-    {
-        
+    {        
         Global global = GameObject.FindWithTag("Global").GetComponent<Global>();
         float deltaTime = Time.deltaTime;
 
@@ -52,6 +52,7 @@ public class Invader : MonoBehaviour
             }
             velocity.z = 0;
             currentMoveDownIncrement = 0;
+            numMoveDown++;
         } else if (moveDown && currentMoveDownIncrement < moveDownIncrement)
         {
             currentMoveDownIncrement += deltaTime * Mathf.Abs(velocity.z);
@@ -63,14 +64,15 @@ public class Invader : MonoBehaviour
         // check if reach left or right boundary,
         // move the invader closer to the ship and 
         // reverse the horizontal moving direction
-        if (transform.position.x < -horBound || transform.position.x > horBound)
+        Global global = GameObject.FindWithTag("Global").GetComponent<Global>();
+        if (transform.position.x < -global.horBound || transform.position.x > global.horBound)
         {
             if (moveLeft)
             {
-                transform.position = new Vector3(-horBound, transform.position.y, transform.position.z);
+                transform.position = new Vector3(-global.horBound, transform.position.y, transform.position.z);
             } else
             {
-                transform.position = new Vector3(horBound, transform.position.y, transform.position.z);
+                transform.position = new Vector3(global.horBound, transform.position.y, transform.position.z);
             }
 
             moveLeft = !moveLeft;
@@ -82,6 +84,8 @@ public class Invader : MonoBehaviour
 
     void Die()
     {
-
+        Global global = GameObject.FindWithTag("Global").GetComponent<Global>();
+        global.AddScore(numMoveDown);
+        Destroy(gameObject);
     }
 }
